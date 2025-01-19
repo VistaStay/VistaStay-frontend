@@ -6,15 +6,15 @@ const App = () => {
 
   return (
     <>
-      <Navigation name="Manupa" />
+      <Navigation name="sharada" />
       <div className="relative min-h-screen">
-        <Hero />
+      <Hero />
         <img
           src="/assets/hero/hero_1.jpg"
           alt=""
-          className="absolute top-0 left-0 w-full h-full object-cover -z-10"
-        />
-      </div>
+          className="absolute top-0 left-0 w-full h-[800px] object-cover -z-10 brightness-50"
+         />
+        </div>
       <HotelListings />
     </>
   );

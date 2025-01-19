@@ -4,18 +4,11 @@ import { useState } from "react";
 
 function HotelCard(props) {
 
-    // const [num, setNum] = useState(1);
+     const [num, setNum] = useState(1);
 
     const handleClick = (e) => {
-        // batching      
-
-        // setNum(num + 1);
-        // setNum(num + 1);
-        // setNum(num + 1);  
-
-        // setNum(num => num + 1);
-        // setNum(num => num + 1);
-        // setNum(num => num + 1);  
+        // batching       
+        setNum(num => num + 1);
     }
 
     return (
@@ -50,10 +43,10 @@ function HotelCard(props) {
                 </div>
             </div>
 
-            {/* <div className="mt-4">
+            <div className="mt-4">
                 <p>{num}</p>
                 <Button onClick={handleClick}>Click</Button>
-            </div> */}
+            </div> 
         </div>
     );
 }
