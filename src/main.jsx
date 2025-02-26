@@ -9,6 +9,7 @@ import SignUp from "./pages/signup.page";
 import HotelPage from "./pages/hotel.page";
 import RootLayout from "./Layout/root-layout.layout";
 import MainLayout from "./Layout/main.layout";
+import HotelsPage from "./pages/hotels.page";
 
 
 createRoot(document.getElementById("root")).render(
@@ -18,6 +19,7 @@ createRoot(document.getElementById("root")).render(
         <Route element={<RootLayout />}>
         <Route element={<MainLayout />}>
          <Route path="/" element={<HomePage />} />
+         <Route path="/hotels" element={<HotelsPage/>}/>
          <Route path="/hotels/:id" element={<HotelPage />} />
          </Route>
         </Route>
