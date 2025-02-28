@@ -101,7 +101,9 @@ export default function HotelListings() {
   // ]
 
   const [hotels,setHotels] = useState([]);
-  const locations = ["ALL", "France", "Italy", "Australia", "Japan"]
+  const locations = ["ALL", "France", "Italy", "Australia", "Japan"];
+  const [error,setError] = useState(""); 
+  const [isloading,setIsLoading] = useState(true); 
 
   const [selectedLocation, setSelectedLocation] = useState("ALL");
 
@@ -119,8 +121,11 @@ export default function HotelListings() {
       setHotels(data);
     })
     .catch((error) => {
-      console.log(error);
-    });
+      setError(error.message);
+    })
+    .finally(() =>{
+      setIsLoading(false);
+    })
   },[]);
 
   return (
@@ -154,6 +159,9 @@ export default function HotelListings() {
           })
         }
       </div>
+      {isloading ? (
+        <div>Loading</div>
+      ):(
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
         {
           filteredHotels.map((hotel) => {
@@ -161,6 +169,7 @@ export default function HotelListings() {
           })
         }
       </div>
+      )}
     </section>
   );
 }
