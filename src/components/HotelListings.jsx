@@ -1,7 +1,8 @@
-import { useState } from "react";
+
+import { useState , useEffect} from "react";
 import HotelCard from "./HotelCard";
 import LocationTab from "./LocationTab";
-import { Button } from "@/components/ui/button";
+//import { Button } from "@/components/ui/button";
 import { getHotels } from "@/lib/api/hotels";
 
 
@@ -112,6 +113,16 @@ export default function HotelListings() {
     return hotel.location.toLowerCase().includes(selectedLocation.toLowerCase());
   })
 
+  useEffect(() => {
+   getHotels()
+    .then((data) => {
+      setHotels(data);
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+  },[]);
+
   return (
     <section className="px-8 py-8 lg:py-16">
       <div className="mb-12">
@@ -121,7 +132,7 @@ export default function HotelListings() {
         <p className="text-lg text-muted-foreground">
         Uncover the most sought-after hotels across the globe for an unparalleled experience
         </p>
-        <Button
+        {/* <Button
          onClick={async () => {
           try {
            const hotels = await getHotels(); // Call the function properly
@@ -130,14 +141,16 @@ export default function HotelListings() {
              console.error("Error fetching hotels:", error);
          }
       }}
->
-  Fetch data
-</Button>
+      >
+      Fetch data
+      </Button> */}
       </div>
       <div className="flex items-center gap-x-4">
         {
-          locations.map((location) => {
-            return (<LocationTab selectedLocation={selectedLocation} name={location} onClick={handleSelectedLocation} />)
+          locations.map((location,i) => {
+            return (<LocationTab 
+              key={i}
+              selectedLocation={selectedLocation} name={location} onClick={handleSelectedLocation} />)
           })
         }
       </div>
