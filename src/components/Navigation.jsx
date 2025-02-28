@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import { Link } from "react-router";
-function Navigation(p) {
+import { useSelector } from "react-redux";
 
+function Navigation() {
+  const userSlice =useSelector((state)=>state.user);
+  console.log(userSlice);
   return (
     <nav className="z-10 bg-blue-900 flex  items-center justify-between px-8 text-white py-4">
       <div className="flex items-center space-x-8">
@@ -31,7 +34,7 @@ function Navigation(p) {
           <Link to="/sign-up">Sign Up</Link>
         </Button>
         <div>
-           <p>{p.name}</p> 
+           <p>{userSlice.user.name}</p>
         </div>
       </div>
     </nav>

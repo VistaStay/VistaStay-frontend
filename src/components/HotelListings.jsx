@@ -2,12 +2,15 @@ import { getHotels } from "@/lib/api/hotels";
 import { useEffect, useState } from "react";
 import HotelCard from "./HotelCard";
 import LocationTab from "./LocationTab";
+import { useSelector } from "react-redux";
 
 export default function HotelListings() {
   const [hotels, setHotels] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState("");
+
+  const userSlice = useSelector((state) => state.user);
 
   const locations = ["ALL", "France", "Italy", "Australia", "Japan"];
 
@@ -105,6 +108,7 @@ export default function HotelListings() {
   return (
     <section className="px-8 py-8 lg:py-16">
       <div className="mb-12">
+      <p>Hello ,{userSlice.user.name}</p>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Top trending hotels worldwide
         </h2>
