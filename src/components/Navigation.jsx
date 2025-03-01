@@ -19,6 +19,9 @@ function Navigation() {
           <Link to={`/hotels/4567`} className="transition-colors">
             Hotels
           </Link>
+          <Link to={`/hotels/create`} className="transition-colors">
+            Create Hotel
+          </Link>
         </div>
       </div>
 
@@ -33,9 +36,9 @@ function Navigation() {
         <Button asChild>
           <Link to="/sign-up">Sign Up</Link>
         </Button>
-        <div>
+        {/* <div>
            <p>{userSlice.user.name}</p>
-        </div>
+        </div> */}
       </div>
     </nav>
   );

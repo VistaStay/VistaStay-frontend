@@ -16,7 +16,7 @@ export default function HotelListings() {
 
   const { data:hotels , isLoading, isError , error } = useGetHotelsQuery();
   const dispatch = useDispatch();
-  const userSlice = useSelector((state) => state.user);
+  //const userSlice = useSelector((state) => state.user);
 
   const locations = ["ALL", "France", "Italy", "Australia", "Japan"];
 
@@ -114,10 +114,10 @@ export default function HotelListings() {
   return (
     <section className="px-8 py-8 lg:py-16">
       <div className="mb-12">
-      <p>Hello ,{userSlice.user.name}</p>
-      <Button onClick={() =>{
+     {/* <p>Hello ,{userSlice.user.name}</p> */}
+      {/* <Button onClick={() =>{
         dispatch(setUser({ name:"kamal"}));
-      }}>Click me!</Button>
+      }}>Click me!</Button> */}
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Top trending hotels worldwide
         </h2>

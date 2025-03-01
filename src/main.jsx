@@ -12,6 +12,7 @@ import MainLayout from "./Layout/main.layout";
 import HotelsPage from "./pages/hotels.page";
 import { store } from "./lib/store";
 import { Provider } from "react-redux";
+import CreateHotelPage from "./pages/create.hotel.page";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
@@ -23,6 +24,7 @@ createRoot(document.getElementById("root")).render(
          <Route path="/" element={<HomePage />} />
          <Route path="/hotels" element={<HotelsPage/>}/>
          <Route path="/hotels/:id" element={<HotelPage />} />
+         <Route path="/hotels/create" element={<CreateHotelPage/>}/>
          </Route>
         </Route>
         <Route path="/sign-in" element={<SignIn />} />
