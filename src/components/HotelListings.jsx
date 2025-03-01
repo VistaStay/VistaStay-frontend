@@ -3,6 +3,9 @@ import { useEffect, useState } from "react";
 import HotelCard from "./HotelCard";
 import LocationTab from "./LocationTab";
 import { useSelector } from "react-redux";
+import { Button } from "./ui/button";
+import { setUser } from "@/lib/api/features/userSlice";
+import { useDispatch } from "react-redux";
 
 export default function HotelListings() {
   const [hotels, setHotels] = useState([]);
@@ -10,6 +13,7 @@ export default function HotelListings() {
   const [isError, setIsError] = useState(false);
   const [error, setError] = useState("");
 
+  const dispatch = useDispatch();
   const userSlice = useSelector((state) => state.user);
 
   const locations = ["ALL", "France", "Italy", "Australia", "Japan"];
@@ -109,6 +113,9 @@ export default function HotelListings() {
     <section className="px-8 py-8 lg:py-16">
       <div className="mb-12">
       <p>Hello ,{userSlice.user.name}</p>
+      <Button onClick={() =>{
+        dispatch(setUser({ name:"kamal"}));
+      }}>Click me!</Button>
         <h2 className="text-3xl md:text-4xl font-bold mb-4">
           Top trending hotels worldwide
         </h2>
