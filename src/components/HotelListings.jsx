@@ -6,13 +6,15 @@ import { useSelector } from "react-redux";
 import { Button } from "./ui/button";
 import { setUser } from "@/lib/api/features/userSlice";
 import { useDispatch } from "react-redux";
+import { useGetHotelsQuery } from "@/lib/api";
 
 export default function HotelListings() {
-  const [hotels, setHotels] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isError, setIsError] = useState(false);
-  const [error, setError] = useState("");
+  // const [hotels, setHotels] = useState([]);
+  // const [isLoading, setIsLoading] = useState(true);
+  // const [isError, setIsError] = useState(false);
+  // const [error, setError] = useState("");
 
+  const { data:hotels , isLoading, isError , error } = useGetHotelsQuery();
   const dispatch = useDispatch();
   const userSlice = useSelector((state) => state.user);
 
@@ -33,19 +35,19 @@ export default function HotelListings() {
             .includes(selectedLocation.toLowerCase());
         });
 
-  useEffect(() => {
-    getHotels()
-      .then((data) => {
-        setHotels(data);
-      })
-      .catch((error) => {
-        setIsError(true);
-        setError(error.message);
-      })
-      .finally(() => {
-        setIsLoading(false);
-      });
-  }, []);
+  // useEffect(() => {
+  //   getHotels()
+  //     .then((data) => {
+  //       setHotels(data);
+  //     })
+  //     .catch((error) => {
+  //       setIsError(true);
+  //       setError(error.message);
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     });
+  // }, []);
 
   if (isLoading) {
     return (
