@@ -104,10 +104,10 @@ export default function HotelPage() {
           </div>
           <div className="flex items-center space-x-1">
             <Star className="h-5 w-5 fill-primary text-primary" />
-            <span className="font-bold">{hotel.rating}</span>
+            <span className="font-bold">{hotel.rating ?? "No rating"}</span>
             <span className="text-muted-foreground">
-              ({hotel.reviews.toLocaleString()} reviews)
-            </span>
+  ({hotel.reviews ? hotel.reviews.toLocaleString() : "No"} reviews)
+</span>
           </div>
           <p className="text-muted-foreground">{hotel.description}</p>
           <Card>
