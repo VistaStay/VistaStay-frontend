@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import { Link } from "react-router";
 import { useSelector } from "react-redux";
+import { SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/clerk-react";
 
 function Navigation() {
   const userSlice =useSelector((state)=>state.user);
@@ -16,9 +17,9 @@ function Navigation() {
           <Link to={`/`} className="transition-colors">
             Home
           </Link>
-          <Link to={`/hotels/4567`} className="transition-colors">
+          {/* <Link to={`/hotels/4567`} className="transition-colors">
             Hotels
-          </Link>
+          </Link> */}
           <Link to={`/hotels/create`} className="transition-colors">
             Create Hotel
           </Link>
@@ -30,12 +31,20 @@ function Navigation() {
           <Globe className="h-5 w-5 mr-2" />
           EN
         </Button>
+        <SignedOut>
         <Button variant="ghost" asChild>
           <Link to="/sign-in">Log In</Link>
         </Button>
         <Button asChild>
           <Link to="/sign-up">Sign Up</Link>
         </Button>
+        </SignedOut>
+        <SignedIn>
+          <UserButton/>
+          <Button asChild>
+            <Link to="/account">My Account</Link>
+          </Button>
+        </SignedIn>
         {/* <div>
            <p>{userSlice.user.name}</p>
         </div> */}

@@ -1,11 +1,11 @@
-import React from 'react'
+import {SignUp} from "@clerk/clerk-react"
 
-const SignUp= () => {
+const SignUpPage= () => {
   return (
-    <div>
-      <h1>Sign In</h1>
-    </div>
+    <main className="flex items-center justify-center min-h-screen px-4">
+      <SignUp/>
+    </main>
   )
 }
 
-export default SignUp;
+export default SignUpPage;
