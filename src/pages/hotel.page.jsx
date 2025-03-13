@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { useGetHotelByIdQuery } from "@/lib/api";
+import { useCreateBookingMutation, useGetHotelByIdQuery } from "@/lib/api";
 import {
   Coffee,
   MapPin,
@@ -11,12 +11,26 @@ import {
   Wifi,
 } from "lucide-react";
 
-import { useParams } from "react-router";
+import { Link, useParams } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function HotelPage() {
   const { id } = useParams();
   const { data: hotel, isLoading, isError, error } = useGetHotelByIdQuery(id);
+  const [createBooking , {isLoading : isCreateBookingLoading}] = useCreateBookingMutation();
+
+  const handleBook = async () => {
+    try {
+      await createBooking({
+        hotelId: id,
+        checkIn: new Date(),
+        checkout: new Date(),
+        roomNumber: 200
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   if (isLoading)
     return (
@@ -69,7 +83,7 @@ export default function HotelPage() {
       </div>
     );
 
-  if (isError) return <p className="text-red">Error: {isError.message}</p>;
+  if (isError) return <p className="text-red">Error: {error.message}</p>;
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
@@ -106,8 +120,8 @@ export default function HotelPage() {
             <Star className="h-5 w-5 fill-primary text-primary" />
             <span className="font-bold">{hotel.rating ?? "No rating"}</span>
             <span className="text-muted-foreground">
-  ({hotel.reviews ? hotel.reviews.toLocaleString() : "No"} reviews)
-</span>
+              ({hotel.reviews ? hotel.reviews.toLocaleString() : "No"} reviews)
+            </span>
           </div>
           <p className="text-muted-foreground">{hotel.description}</p>
           <Card>
@@ -138,7 +152,9 @@ export default function HotelPage() {
               <p className="text-2xl font-bold">${hotel.price}</p>
               <p className="text-sm text-muted-foreground">per night</p>
             </div>
-            <Button size="lg">Book Now</Button>
+            <Link to="/hotels/create/booking">
+            <Button size="lg" >Book Now</Button>
+            </Link>
           </div>
         </div>
       </div>

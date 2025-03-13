@@ -90,7 +90,7 @@ const CreateHotelForm = () => {
               </FormItem>
             )}
           />
-          <FormField
+          {/* <FormField
             control={form.control}
             name="price"
             render={({ field }) => (
@@ -109,7 +109,7 @@ const CreateHotelForm = () => {
                 <FormMessage />
               </FormItem>
             )}
-          />
+          /> */}
           <FormField
             control={form.control}
             name="description"

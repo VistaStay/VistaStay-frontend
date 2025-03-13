@@ -2,11 +2,12 @@ import { Button } from "@/components/ui/button";
 import { Globe } from "lucide-react";
 import { Link } from "react-router";
 import { useSelector } from "react-redux";
-import { SignedIn, SignedOut, SignOutButton, UserButton } from "@clerk/clerk-react";
+import { SignedIn, SignedOut, SignOutButton, UserButton, useUser } from "@clerk/clerk-react";
 
 function Navigation() {
-  const userSlice =useSelector((state)=>state.user);
-  console.log(userSlice);
+  //const userSlice =useSelector((state)=>state.user);
+  //console.log(userSlice);
+  const {user} = useUser();
   return (
     <nav className="z-10 bg-blue-900 flex  items-center justify-between px-8 text-white py-4">
       <div className="flex items-center space-x-8">
@@ -20,9 +21,9 @@ function Navigation() {
           {/* <Link to={`/hotels/4567`} className="transition-colors">
             Hotels
           </Link> */}
-          <Link to={`/hotels/create`} className="transition-colors">
+          {user?.publicMetadata?.role === "admin" && <Link to={`/hotels/create`} className="transition-colors">
             Create Hotel
-          </Link>
+          </Link>}
         </div>
       </div>
 
