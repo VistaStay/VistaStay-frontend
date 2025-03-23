@@ -28,6 +28,13 @@ const CreateHotelForm = () => {
   const [createHotel, { isLoading }] = useCreateHotelMutation();
   const form = useForm({
     resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: "",
+      location: "",
+      image: "",
+      price: 0,
+      description: "",
+    },
   });
 
   const handleSubmit = async (values) => {
@@ -101,7 +108,7 @@ const CreateHotelForm = () => {
                     type="number"
                     placeholder="Price"
                     onChange={(e) => {
-                      field.onChange(parseFloat(e.target.value));
+                      field.onChange(parseFloat(e.target.value) || 0);
                     }}
                     value={field.value}
                   />
