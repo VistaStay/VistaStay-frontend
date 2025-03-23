@@ -1,13 +1,6 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-<<<<<<< HEAD
-import App from "./App.jsx";
-
-createRoot(document.getElementById("root")).render(
-  <StrictMode>
-    <App />
-=======
 import { BrowserRouter, Routes, Route } from "react-router"; // Fixed import
 //import App from "./App.jsx";
 import HomePage from "./pages/home.page";
@@ -55,6 +48,5 @@ createRoot(document.getElementById("root")).render(
     </BrowserRouter>
     </Provider>
     </ClerkProvider>
->>>>>>> test7
   </StrictMode>
 );
