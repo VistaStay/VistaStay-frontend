@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles } from "lucide-react";
+<<<<<<< HEAD
 
 
 export default function Hero() {
@@ -8,10 +9,23 @@ export default function Hero() {
   const handleSearch = (e) => {
     e.preventDefault();
     
+=======
+import { useDispatch } from "react-redux";
+import { submit } from "@/lib/api/features/searchSlice";
+
+export default function Hero() {
+  const dispatch = useDispatch();
+  
+  const handleSearch = (e) => {
+    e.preventDefault();
+    const searchQuery = e.target.search.value;
+    dispatch(submit(searchQuery));
+>>>>>>> test7
   };
 
   return (
     <div className="">
+<<<<<<< HEAD
       {/* Hero Content */}
       <div className="relative z-10 flex flex-col items-center  text-white justify-center px-8 pt-32 pb-32">
         <h1 className="text-4xl md:text-6xl font-bold  mb-8 text-center">
@@ -30,6 +44,26 @@ export default function Hero() {
             type="text"
             placeholder="Describe your destination, experience, or hotel..."          
             className="flex-grow  bg-transparent lg:text-lg  text-white placeholder:text-white/50 border-none outline-none focus:border-none focus:outline-none focus-visible:ring-0"
+=======
+      <div className="relative z-10 flex flex-col items-center text-white justify-center px-8 pt-32 pb-32">
+        <h1 className="text-4xl md:text-6xl font-bold mb-8 text-center">
+          Find Your Best Staycation
+        </h1>
+        <p className="text-xl mb-12 text-center max-w-2xl">
+          Describe your dream destination and experience, and we'll find the
+          perfect place for you.
+        </p>
+
+        <form
+          onSubmit={handleSearch}
+          className="w-full max-w-3xl bg-black/10 backdrop-blur-md lg:h-16 rounded-full p-2 flex items-center"
+        >
+          <Input
+            type="text"
+            name="search"
+            placeholder="Describe your destination, experience, or hotel..."
+            className="flex-grow bg-transparent lg:text-lg text-white placeholder:text-white/50 border-none outline-none focus:border-none focus:outline-none focus-visible:ring-0"
+>>>>>>> test7
           />
           <Button
             type="submit"
@@ -37,7 +71,11 @@ export default function Hero() {
           >
             <Sparkles
               style={{ width: "20px", height: "20px" }}
+<<<<<<< HEAD
               className=" mr-2 animate-pulse text-sky-400"
+=======
+              className="mr-2 animate-pulse text-sky-400"
+>>>>>>> test7
             />
             <span className="lg:text-lg">AI Search</span>
           </Button>
@@ -45,4 +83,8 @@ export default function Hero() {
       </div>
     </div>
   );
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> test7
