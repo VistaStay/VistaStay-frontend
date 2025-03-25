@@ -1,60 +1,57 @@
-import { useGetHotelsForSearchQueryQuery, useGetHotelsQuery } from "@/lib/api";
 import { useState } from "react";
+import { useSelector } from "react-redux";
 import HotelCard from "./HotelCard";
 import LocationTab from "./LocationTab";
-import { useSelector } from "react-redux";
+import { useGetHotelsQuery, useGetHotelsForSearchQueryQuery } from "@/lib/api";
+import PriceFilter from "./Sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from "@/components/ui/sheet"
 
 export default function HotelListings() {
-  const searchValue = useSelector((state) => state.search.query); // Changed from .value to .query
+  const searchValue = useSelector((state) => state.search.query); 
   const [selectedLocation, setSelectedLocation] = useState("ALL");
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(1000);
+  
   const locations = ["ALL", "France", "Italy", "Australia", "Japan"];
 
-  // Fetch all hotels for initial load and location filtering
-  const { 
-    data: allHotels, 
-    isLoading: allHotelsLoading, 
-    isError: allHotelsError 
-  } = useGetHotelsQuery();
-
-  // Fetch AI search results only when searchValue exists
-  const { 
-    data: searchResults, 
-    isLoading: searchLoading, 
-    isError: searchError 
-  } = useGetHotelsForSearchQueryQuery(
-    { query: searchValue },
-    { skip: !searchValue } // Skip this query if no search value
+  const { data: allHotels, isLoading: allHotelsLoading, isError: allHotelsError } = useGetHotelsQuery();
+  const { data: searchResults, isLoading: searchLoading, isError: searchError } = useGetHotelsForSearchQueryQuery(
+    { query: searchValue }, 
+    { skip: !searchValue } 
   );
 
   const handleSelectedLocation = (location) => {
     setSelectedLocation(location);
   };
 
-  // Determine which data to use
   const isAISearchActive = !!searchValue;
   const hotelsData = isAISearchActive ? searchResults : allHotels;
   const isLoading = isAISearchActive ? searchLoading : allHotelsLoading;
   const isError = isAISearchActive ? searchError : allHotelsError;
 
+  const handleApplyFilters = () => {
+    setIsSheetOpen(false);
+  };
+
   if (isLoading) {
     return (
       <section className="px-8 py-8 lg:py-16">
         <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Top trending hotels worldwide
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Top trending hotels worldwide</h2>
           <p className="text-lg text-muted-foreground">
             Discover the most trending hotels worldwide for an unforgettable experience.
           </p>
         </div>
         <div className="flex items-center gap-x-4">
           {locations.map((location, i) => (
-            <LocationTab
-              key={i}
-              selectedLocation={selectedLocation}
-              name={location}
-              onClick={handleSelectedLocation}
-            />
+            <LocationTab key={i} selectedLocation={selectedLocation} name={location} onClick={handleSelectedLocation} />
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
@@ -68,21 +65,14 @@ export default function HotelListings() {
     return (
       <section className="px-8 py-8 lg:py-16">
         <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Top trending hotels worldwide
-          </h2>
+          <h2 className="text-3xl md:text-4xl font-bold mb-4">Top trending hotels worldwide</h2>
           <p className="text-lg text-muted-foreground">
             Discover the most trending hotels worldwide for an unforgettable experience.
           </p>
         </div>
         <div className="flex items-center gap-x-4">
           {locations.map((location, i) => (
-            <LocationTab
-              key={i}
-              selectedLocation={selectedLocation}
-              name={location}
-              onClick={handleSelectedLocation}
-            />
+            <LocationTab key={i} selectedLocation={selectedLocation} name={location} onClick={handleSelectedLocation} />
           ))}
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
@@ -92,51 +82,54 @@ export default function HotelListings() {
     );
   }
 
-  // Filter hotels by location (works for both all hotels and search results)
-  const filteredHotels = hotelsData && hotelsData.length > 0
-    ? (selectedLocation === "ALL"
-        ? hotelsData
-        : hotelsData.filter((item) => {
-            const hotel = isAISearchActive ? item.hotel : item;
-            return hotel.location.toLowerCase().includes(selectedLocation.toLowerCase());
-          }))
-    : [];
+  const filteredHotels = hotelsData?.filter((item) => {
+    const hotel = isAISearchActive ? item.hotel : item;
+    return (
+      (selectedLocation === "ALL" || hotel.location.toLowerCase().includes(selectedLocation.toLowerCase())) &&
+      hotel.price >= minPrice &&
+      hotel.price <= maxPrice
+    );
+  }) || [];
 
   return (
     <section className="px-8 py-8 lg:py-16">
       <div className="mb-12">
-        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-          Top trending hotels worldwide
-        </h2>
+        <h2 className="text-3xl md:text-4xl font-bold mb-4">Top trending hotels worldwide</h2>
         <p className="text-lg text-muted-foreground">
           Discover the most trending hotels worldwide for an unforgettable experience.
         </p>
       </div>
       <div className="flex items-center gap-x-4">
         {locations.map((location, i) => (
-          <LocationTab
-            key={i}
-            selectedLocation={selectedLocation}
-            name={location}
-            onClick={handleSelectedLocation}
-          />
+          <LocationTab key={i} selectedLocation={selectedLocation} name={location} onClick={handleSelectedLocation} />
         ))}
+        <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
+          <SheetTrigger asChild>
+            <button className="bg-blue-500 text-white px-4 py-2 rounded-md ml-auto">Filters</button>
+          </SheetTrigger>
+          <SheetContent className="w-[400px] sm:w-[540px]">
+            <SheetHeader>
+              <SheetTitle>Filters</SheetTitle>
+            </SheetHeader>
+            <PriceFilter
+              minValue={minPrice}
+              maxValue={maxPrice}
+              onMinChange={setMinPrice}
+              onMaxChange={setMaxPrice}
+              onApply={handleApplyFilters}
+            />
+          </SheetContent>
+        </Sheet>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
         {filteredHotels.length > 0 ? (
           filteredHotels.map((item) => {
             const hotel = isAISearchActive ? item.hotel : item;
-            const confidence = isAISearchActive ? item.confidence : null;
-            return (
-              <HotelCard
-                key={hotel._id}
-                hotel={hotel}
-                confidence={confidence}
-              />
-            );
+            return <HotelCard key={hotel._id} hotel={hotel} />;
           })
         ) : (
-          <p>No hotels found for this location.</p>
+          <p>No hotels found matching your criteria.</p>
         )}
       </div>
     </section>

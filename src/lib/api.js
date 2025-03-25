@@ -1,7 +1,7 @@
 import { createApi , fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 //import { getHotels } from "./api/hotels";
 
-const BACKEND_URL = "http://localhost:8080";
+const BACKEND_URL = "http://localhost:8081";
 
 export const api = createApi({
     reducerPath:"api",
