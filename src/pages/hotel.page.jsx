@@ -2,99 +2,71 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCreateBookingMutation, useGetHotelByIdQuery } from "@/lib/api";
-import {
-  Coffee,
-  MapPin,
-  MenuIcon as Restaurant,
-  Star,
-  Tv,
-  Wifi,
-} from "lucide-react";
-
+import { Coffee, MapPin, MenuIcon as Restaurant, Star, Tv, Wifi } from "lucide-react";
 import { useParams } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useUser } from "@clerk/clerk-react";
+import { useState } from "react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Calendar } from "@/components/ui/calendar";
+import { Label } from "@/components/ui/label";
 
 export default function HotelPage() {
   const { id } = useParams();
   const { data: hotel, isLoading, isError, error } = useGetHotelByIdQuery(id);
-  const [createBooking , {isLoading : isCreateBookingLoading}] = useCreateBookingMutation();
+  const [createBooking, { isLoading: isCreateBookingLoading }] = useCreateBookingMutation();
+  const { user } = useUser();
+
+  const [open, setOpen] = useState(false);
+  const [checkIn, setCheckIn] = useState(new Date());
+  const [checkOut, setCheckOut] = useState(new Date());
+  const [roomNumber, setRoomNumber] = useState(200);
+  const [calendarOpen, setCalendarOpen] = useState(null);
 
   const handleBook = async () => {
     try {
-      await createBooking({
+      const bookingData = {
         hotelId: id,
-        checkIn: new Date(),
-        checkout: new Date(),
-        roomNumber: 200
-      });
+        checkIn: checkIn.toISOString(),
+        checkOut: checkOut.toISOString(),
+        roomNumber,
+      };
+      const response = await createBooking(bookingData).unwrap();
+      console.log("Booking response:", response);
+      setOpen(false);
     } catch (error) {
-      console.log(error);
+      console.error("Booking error:", error);
     }
   };
 
   if (isLoading)
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen">
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <Skeleton className="w-full h-[400px] rounded-lg" />
-            <div className="flex space-x-2">
-              <Skeleton className="h-6 w-24" />
-              <Skeleton className="h-6 w-32" />
-              <Skeleton className="h-6 w-28" />
-            </div>
-          </div>
-          <div className="space-y-6">
-            <div className="flex justify-between items-start">
-              <div>
-                <Skeleton className="h-8 w-64 mb-2" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-              <Skeleton className="h-10 w-10 rounded-full" />
-            </div>
-            <Skeleton className="h-4 w-36" />
-            <div className="space-y-2">
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-full" />
-              <Skeleton className="h-4 w-3/4" />
-            </div>
-            <Card>
-              <CardContent className="p-4">
-                <Skeleton className="h-6 w-32 mb-4" />
-                <div className="grid grid-cols-2 gap-4">
-                  {[...Array(4)].map((_, index) => (
-                    <div key={index} className="flex items-center">
-                      <Skeleton className="h-5 w-5 mr-2" />
-                      <Skeleton className="h-4 w-24" />
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
-            <div className="flex items-center justify-between">
-              <div>
-                <Skeleton className="h-8 w-24 mb-1" />
-                <Skeleton className="h-4 w-16" />
-              </div>
-              <Skeleton className="h-12 w-32" />
-            </div>
-          </div>
-        </div>
+        <Skeleton className="w-full h-[400px] rounded-lg" />
+        {/* You can add more skeleton components to show loading state */}
       </div>
     );
 
-  if (isError) return <p className="text-red">Error: {error.message}</p>;
+  if (isError)
+    return (
+      <p className="text-red">
+        Error: {error.message}
+      </p>
+    );
 
   return (
     <div className="container mx-auto px-4 py-8 min-h-screen">
       <div className="grid md:grid-cols-2 gap-8">
         <div className="space-y-4">
           <div className="relative w-full h-[400px]">
-            <img
-              src={hotel.image}
-              alt={hotel.name}
-              className="absolute object-cover rounded-lg"
-            />
+            <img src={hotel.image} alt={hotel.name} className="absolute object-cover rounded-lg" />
           </div>
           <div className="flex space-x-2">
             <Badge variant="secondary">Rooftop View</Badge>
@@ -106,6 +78,8 @@ export default function HotelPage() {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-bold">{hotel.name}</h1>
+              <h1 className="text-2xl">{hotel._id}</h1>
+              <h1 className="text-2xl">{user?.id || "No user ID"}</h1>
               <div className="flex items-center mt-2">
                 <MapPin className="h-5 w-5 text-muted-foreground mr-1" />
                 <p className="text-muted-foreground">{hotel.location}</p>
@@ -113,7 +87,6 @@ export default function HotelPage() {
             </div>
             <Button variant="outline" size="icon">
               <Star className="h-4 w-4" />
-              <span className="sr-only">Add to favorites</span>
             </Button>
           </div>
           <div className="flex items-center space-x-1">
@@ -152,7 +125,78 @@ export default function HotelPage() {
               <p className="text-2xl font-bold">${hotel.price}</p>
               <p className="text-sm text-muted-foreground">per night</p>
             </div>
-            <Button size="lg" onClick={handleBook}>Book Now</Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button size="lg">Book Now</Button>
+              </DialogTrigger>
+              <DialogContent className="sm:max-w-[425px]">
+                <DialogHeader>
+                  <DialogTitle>Book Your Stay</DialogTitle>
+                </DialogHeader>
+                <div className="grid gap-4 py-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="checkIn">Check-in Date</Label>
+                    <Dialog open={calendarOpen === 'checkIn'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkIn' : null)}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">{checkIn.toLocaleDateString()}</Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-auto">
+                        <DialogHeader>
+                          <DialogTitle>Select Check-in Date</DialogTitle>
+                        </DialogHeader>
+                        <Calendar
+                          mode="single"
+                          selected={checkIn}
+                          onSelect={(date) => {
+                            setCheckIn(date);
+                            setCalendarOpen(null);
+                          }}
+                          className="rounded-md border"
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="checkOut">Check-out Date</Label>
+                    <Dialog open={calendarOpen === 'checkOut'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkOut' : null)}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline">{checkOut.toLocaleDateString()}</Button>
+                      </DialogTrigger>
+                      <DialogContent className="w-auto">
+                        <DialogHeader>
+                          <DialogTitle>Select Check-out Date</DialogTitle>
+                        </DialogHeader>
+                        <Calendar
+                          mode="single"
+                          selected={checkOut}
+                          onSelect={(date) => {
+                            setCheckOut(date);
+                            setCalendarOpen(null);
+                          }}
+                          className="rounded-md border"
+                        />
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="roomNumber">Room Number</Label>
+                    <Input
+                      id="roomNumber"
+                      type="number"
+                      value={roomNumber}
+                      onChange={(e) => setRoomNumber(Number(e.target.value))}
+                    />
+                  </div>
+                </div>
+                <Button
+                  onClick={handleBook}
+                  disabled={isCreateBookingLoading}
+                  className="w-full mt-4"
+                >
+                  {isCreateBookingLoading ? "Booking..." : "Confirm Booking"}
+                </Button>
+              </DialogContent>
+            </Dialog>
           </div>
         </div>
       </div>
