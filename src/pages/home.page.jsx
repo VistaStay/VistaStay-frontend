@@ -1,6 +1,7 @@
 import Navigation from "@/components/Navigation";
 import Hero from "@/components/Hero";
 import HotelListings from "@/components/HotelListings";
+import Footer from "@/components/Footer";
 
 const HomePage = () => {
 
@@ -15,6 +16,7 @@ const HomePage = () => {
          />
         </div>
       <HotelListings />
+      <Footer/>
     </>
   );
 };
