@@ -78,8 +78,6 @@ export default function HotelPage() {
           <div className="flex justify-between items-start">
             <div>
               <h1 className="text-3xl font-bold">{hotel.name}</h1>
-              <h1 className="text-2xl">{hotel._id}</h1>
-              <h1 className="text-2xl">{user?.id || "No user ID"}</h1>
               <div className="flex items-center mt-2">
                 <MapPin className="h-5 w-5 text-muted-foreground mr-1" />
                 <p className="text-muted-foreground">{hotel.location}</p>
