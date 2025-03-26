@@ -132,49 +132,51 @@ export default function HotelPage() {
                   <DialogTitle>Book Your Stay</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="checkIn">Check-in Date</Label>
-                    <Dialog open={calendarOpen === 'checkIn'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkIn' : null)}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">{checkIn.toLocaleDateString()}</Button>
-                      </DialogTrigger>
-                      <DialogContent className="w-auto">
-                        <DialogHeader>
-                          <DialogTitle>Select Check-in Date</DialogTitle>
-                        </DialogHeader>
-                        <Calendar
-                          mode="single"
-                          selected={checkIn}
-                          onSelect={(date) => {
-                            setCheckIn(date);
-                            setCalendarOpen(null);
-                          }}
-                          className="rounded-md border"
-                        />
-                      </DialogContent>
-                    </Dialog>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="checkOut">Check-out Date</Label>
-                    <Dialog open={calendarOpen === 'checkOut'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkOut' : null)}>
-                      <DialogTrigger asChild>
-                        <Button variant="outline">{checkOut.toLocaleDateString()}</Button>
-                      </DialogTrigger>
-                      <DialogContent className="w-auto">
-                        <DialogHeader>
-                          <DialogTitle>Select Check-out Date</DialogTitle>
-                        </DialogHeader>
-                        <Calendar
-                          mode="single"
-                          selected={checkOut}
-                          onSelect={(date) => {
-                            setCheckOut(date);
-                            setCalendarOpen(null);
-                          }}
-                          className="rounded-md border"
-                        />
-                      </DialogContent>
-                    </Dialog>
+                  <div className="flex space-x-4"> {/* Align check-in and check-out horizontally */}
+                    <div className="grid gap-2 flex-1">
+                      <Label htmlFor="checkIn">Check In</Label>
+                      <Dialog open={calendarOpen === 'checkIn'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkIn' : null)}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">{checkIn.toLocaleDateString()}</Button>
+                        </DialogTrigger>
+                        <DialogContent className="w-auto">
+                          <DialogHeader>
+                            <DialogTitle>Select Check-in Date</DialogTitle>
+                          </DialogHeader>
+                          <Calendar
+                            mode="single"
+                            selected={checkIn}
+                            onSelect={(date) => {
+                              setCheckIn(date);
+                              setCalendarOpen(null);
+                            }}
+                            className="rounded-md border"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
+                    <div className="grid gap-2 flex-1">
+                      <Label htmlFor="checkOut">Check Out</Label>
+                      <Dialog open={calendarOpen === 'checkOut'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkOut' : null)}>
+                        <DialogTrigger asChild>
+                          <Button variant="outline">{checkOut.toLocaleDateString()}</Button>
+                        </DialogTrigger>
+                        <DialogContent className="w-auto">
+                          <DialogHeader>
+                            <DialogTitle>Select Check-out Date</DialogTitle>
+                          </DialogHeader>
+                          <Calendar
+                            mode="single"
+                            selected={checkOut}
+                            onSelect={(date) => {
+                              setCheckOut(date);
+                              setCalendarOpen(null);
+                            }}
+                            className="rounded-md border"
+                          />
+                        </DialogContent>
+                      </Dialog>
+                    </div>
                   </div>
                   <div className="grid gap-2">
                     <Label htmlFor="roomNumber">Room Number</Label>
