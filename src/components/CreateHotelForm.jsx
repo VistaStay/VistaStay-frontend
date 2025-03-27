@@ -1,3 +1,4 @@
+// CreateHotelForm.jsx
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -83,13 +84,13 @@ const PersonnelSelect = ({ value, onChange }) => {
   );
 };
 
-// Form schema with amenities field as optional
+// Form schema with amenities field (lowercase to match backend)
 const formSchema = z.object({
   name: z.string().min(1, { message: "Hotel name is required" }),
   location: z.string().min(1, { message: "Location is required" }),
   image: z.string().min(1, { message: "Image URL is required" }),
-  price: z.number().min(0, { message: "Price must be a positive number" }).optional(), // Made optional
-  Amenities: z.array(z.string()).optional(), // Made optional
+  price: z.number().min(0, { message: "Price must be a positive number" }), // Made required to match backend
+  amenities: z.array(z.string()).optional(), // Renamed to lowercase "amenities"
   description: z.string().min(1, { message: "Description is required" }),
 });
 
@@ -101,26 +102,26 @@ const CreateHotelForm = () => {
       name: "",
       location: "",
       image: "",
-      price: "", // Default to an empty string
-      Amenities: [], // Default to an empty array
+      price: 0, // Default to 0 instead of empty string
+      amenities: [], // Renamed to lowercase "amenities"
       description: "",
     },
   });
 
   const handleSubmit = async (values) => {
-    const { name, location, image, price, description, Amenities } = values;
+    const { name, location, image, price, description, amenities } = values;
     try {
       toast.loading("Creating hotel...");
       await createHotel({
         name,
         location,
         image,
-        price: price || 0, // Send 0 if price is empty
-        Amenities, // Send the amenities even if it's an empty array
+        price,
+        amenities, // Renamed to lowercase "amenities"
         description,
       }).unwrap();
       toast.success("Hotel created successfully");
-      form.reset(); // Reset form after successful submission
+      form.reset();
     } catch (error) {
       toast.error("Hotel creation failed");
     }
@@ -180,7 +181,7 @@ const CreateHotelForm = () => {
                     type="number"
                     placeholder="Price"
                     onChange={(e) => {
-                      field.onChange(e.target.value === "" ? "" : parseFloat(e.target.value));
+                      field.onChange(e.target.value === "" ? 0 : parseFloat(e.target.value));
                     }}
                     value={field.value}
                   />
@@ -191,7 +192,7 @@ const CreateHotelForm = () => {
           />
           <FormField
             control={form.control}
-            name="Amenities"
+            name="amenities" // Renamed to lowercase "amenities"
             render={({ field }) => (
               <FormItem>
                 <FormLabel>

@@ -1,7 +1,8 @@
+// HotelPage.jsx
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCreateBookingMutation, useGetHotelByIdQuery } from "@/lib/api";
-import { Coffee, MapPin, MenuIcon as Restaurant, Star, Tv, Wifi } from "lucide-react";
+import { Coffee, MapPin, MenuIcon as Restaurant, Star, Tv, Wifi, Refrigerator, Fan, Utensils } from "lucide-react"; // Replaced Oven with Utensils
 import { useParams } from "react-router";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useUser } from "@clerk/clerk-react";
@@ -16,6 +17,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+
+// Define personnelOptions (or import from a shared file)
+const personnelOptions = [
+  { value: "wifi", label: "Free Wi-Fi" },
+  { value: "restaurant", label: "Restaurant" },
+  { value: "tv", label: "Flat-screen TV" },
+  { value: "coffee_maker", label: "Coffee maker" },
+  { value: "fridge", label: "Fridge" },
+  { value: "oven", label: "Oven" },
+  { value: "AC", label: "AC" },
+];
 
 export default function HotelPage() {
   const { id } = useParams();
@@ -45,11 +57,21 @@ export default function HotelPage() {
     }
   };
 
+  // Map amenities to their corresponding icons
+  const amenityIcons = {
+    wifi: <Wifi className="h-5 w-5 text-muted-foreground mr-2" />,
+    restaurant: <Restaurant className="h-5 w-5 text-muted-foreground mr-2" />,
+    tv: <Tv className="h-5 w-5 text-muted-foreground mr-2" />,
+    coffee_maker: <Coffee className="h-5 w-5 text-muted-foreground mr-2" />,
+    fridge: <Refrigerator className="h-5 w-5 text-muted-foreground mr-2" />,
+    oven: <Utensils className="h-5 w-5 text-muted-foreground mr-2" />, // Replaced Oven with Utensils
+    AC: <Fan className="h-5 w-5 text-muted-foreground mr-2" />,
+  };
+
   if (isLoading)
     return (
       <div className="container mx-auto px-4 py-8 min-h-screen">
         <Skeleton className="w-full h-[400px] rounded-lg" />
-        {/* You can add more skeleton components to show loading state */}
       </div>
     );
 
@@ -89,29 +111,28 @@ export default function HotelPage() {
             </span>
           </div>
           <p className="text-muted-foreground">{hotel.description}</p>
+
           <Card>
             <CardContent className="p-4">
               <h2 className="text-xl font-semibold mb-4">Amenities</h2>
               <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <Wifi className="h-5 w-5 mr-2" />
-                  <span>Free Wi-Fi</span>
-                </div>
-                <div className="flex items-center">
-                  <Restaurant className="h-5 w-5 mr-2" />
-                  <span>Restaurant</span>
-                </div>
-                <div className="flex items-center">
-                  <Tv className="h-5 w-5 mr-2" />
-                  <span>Flat-screen TV</span>
-                </div>
-                <div className="flex items-center">
-                  <Coffee className="h-5 w-5 mr-2" />
-                  <span>Coffee maker</span>
-                </div>
+                {hotel.amenities && hotel.amenities.length > 0 ? (
+                  hotel.amenities.map((amenity, index) => {
+                    const label = personnelOptions.find((opt) => opt.value === amenity)?.label || amenity;
+                    return (
+                      <div key={index} className="flex items-center">
+                        {amenityIcons[amenity] || <span className="h-5 w-5 mr-2" />}
+                        <span>{label}</span>
+                      </div>
+                    );
+                  })
+                ) : (
+                  <p>No amenities available.</p>
+                )}
               </div>
             </CardContent>
           </Card>
+
           <div className="flex items-center justify-between">
             <div>
               <p className="text-2xl font-bold">${hotel.price}</p>
@@ -126,7 +147,7 @@ export default function HotelPage() {
                   <DialogTitle>Book Your Stay</DialogTitle>
                 </DialogHeader>
                 <div className="grid gap-4 py-4">
-                  <div className="flex space-x-4"> {/* Align check-in and check-out horizontally */}
+                  <div className="flex space-x-4">
                     <div className="grid gap-2 flex-1">
                       <Label htmlFor="checkIn">Check In</Label>
                       <Dialog open={calendarOpen === 'checkIn'} onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkIn' : null)}>
