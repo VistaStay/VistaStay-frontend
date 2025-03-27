@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function PriceFilter({ minValue, maxValue, onMinChange, onMaxChange, onApply }) {
+export default function Filtering({ minValue, maxValue, onMinChange, onMaxChange, onApply }) {
   const [localMin, setLocalMin] = useState(minValue);
   const [localMax, setLocalMax] = useState(maxValue);
 

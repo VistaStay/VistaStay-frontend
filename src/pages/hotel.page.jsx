@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { useCreateBookingMutation, useGetHotelByIdQuery } from "@/lib/api";
@@ -67,11 +66,6 @@ export default function HotelPage() {
         <div className="space-y-4">
           <div className="relative w-full h-[400px]">
             <img src={hotel.image} alt={hotel.name} className="absolute object-cover rounded-lg" />
-          </div>
-          <div className="flex space-x-2">
-            <Badge variant="secondary">Rooftop View</Badge>
-            <Badge variant="secondary">French Cuisine</Badge>
-            <Badge variant="secondary">City Center</Badge>
           </div>
         </div>
         <div className="space-y-6">
