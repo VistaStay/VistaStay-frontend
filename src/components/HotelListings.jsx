@@ -121,7 +121,7 @@ export default function HotelListings() {
         <SheetTrigger className="bg-black text-white hover:bg-gray-800 font-bold py-2 px-6 rounded">
         Apply Filter
       </SheetTrigger>
-        <SheetContent className="w-full max-w-[1000px] sm:max-w-[700px] md:max-w-[900px] lg:max-w-[1200px]">
+        <SheetContent className="w-full max-w-[1000px] sm:max-w-[500px] md:max-w-[500px] lg:max-w-[670px]">
         <Filtering />
         </SheetContent>
         </Sheet>
