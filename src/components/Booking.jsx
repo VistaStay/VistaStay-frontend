@@ -9,10 +9,13 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
+import { addDays } from "date-fns";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function Booking({ price }) {
   const { id } = useParams();
@@ -22,13 +25,9 @@ export default function Booking({ price }) {
   // State management
   const [open, setOpen] = useState(false);
   const [checkIn, setCheckIn] = useState(new Date());
-  const [checkOut, setCheckOut] = useState(() => {
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    return tomorrow;
-  });
+  const [checkOut, setCheckOut] = useState(addDays(new Date(), 1));
   const [numberOfRooms, setNumberOfRooms] = useState(1);
-  const [calendarOpen, setCalendarOpen] = useState(null);
+  const [activeCalendar, setActiveCalendar] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
 
   // Calculate total price whenever number of rooms or price changes
@@ -42,23 +41,42 @@ export default function Booking({ price }) {
       return;
     }
 
+    if (checkIn >= checkOut) {
+      alert("Check-out date must be after check-in date");
+      return;
+    }
+
     try {
-      // Correct payload keys: remove userId and rename fields to match backend DTO
       const bookingData = {
         hotelId: id,
-        checkIn: checkIn.toISOString().split('T')[0],
-        checkOut: checkOut.toISOString().split('T')[0],
-        roomNumber: numberOfRooms, // Use roomNumber instead of numberOfRooms
-        totalprice: parseFloat(totalPrice), // Use totalprice instead of totalPrice
+        checkIn: checkIn.toISOString().split("T")[0],
+        checkOut: checkOut.toISOString().split("T")[0],
+        roomNumber: numberOfRooms,
+        totalprice: parseFloat(totalPrice),
       };
 
-      console.log("Sending Booking Data:", bookingData);
       const response = await createBooking(bookingData).unwrap();
       console.log("Booking successful:", response);
       setOpen(false);
     } catch (error) {
       console.error("Booking failed:", error);
     }
+  };
+
+  const handleCheckInSelect = (date) => {
+    if (!date) return;
+    setCheckIn(date);
+    // If check-out is now invalid (before or same as new check-in), adjust it
+    if (checkOut <= date) {
+      setCheckOut(addDays(date, 1));
+    }
+    setActiveCalendar(null);
+  };
+
+  const handleCheckOutSelect = (date) => {
+    if (!date) return;
+    setCheckOut(date);
+    setActiveCalendar(null);
   };
 
   return (
@@ -70,22 +88,30 @@ export default function Booking({ price }) {
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-xl">Book Your Stay</DialogTitle>
+          <DialogTitle>
+            <VisuallyHidden>Booking Information</VisuallyHidden>
+            <span className="text-xl">Book Your Stay</span>
+          </DialogTitle>
+          <DialogDescription asChild>
+            <VisuallyHidden>
+              Please select your dates and number of rooms
+            </VisuallyHidden>
+          </DialogDescription>
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
           {/* Date Selection */}
           <div className="flex flex-col sm:flex-row gap-4">
+            {/* Check-in Date */}
             <div className="grid gap-2 flex-1">
-              <Label htmlFor="check-in-date">Check In</Label>
+              <Label htmlFor="check-in">Check In</Label>
               <Dialog 
-                open={calendarOpen === 'checkIn'} 
-                onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkIn' : null)}
+                open={activeCalendar === 'checkIn'} 
+                onOpenChange={(open) => setActiveCalendar(open ? 'checkIn' : null)}
               >
                 <DialogTrigger asChild>
                   <Button 
                     variant="outline" 
-                    id="check-in-date"
                     className="w-full justify-start text-left font-normal"
                   >
                     {checkIn.toLocaleDateString('en-US', {
@@ -96,19 +122,14 @@ export default function Booking({ price }) {
                     })}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-auto p-0">
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Check-in Date</DialogTitle>
+                  </DialogHeader>
                   <Calendar
                     mode="single"
                     selected={checkIn}
-                    onSelect={(date) => {
-                      if (date) {
-                        setCheckIn(date);
-                        // Auto-set checkout to next day
-                        const nextDay = new Date(date);
-                        nextDay.setDate(nextDay.getDate() + 1);
-                        if (nextDay <= checkOut) setCheckOut(nextDay);
-                      }
-                    }}
+                    onSelect={handleCheckInSelect}
                     disabled={(date) => date < new Date()}
                     initialFocus
                   />
@@ -116,16 +137,16 @@ export default function Booking({ price }) {
               </Dialog>
             </div>
 
+            {/* Check-out Date */}
             <div className="grid gap-2 flex-1">
-              <Label htmlFor="check-out-date">Check Out</Label>
+              <Label htmlFor="check-out">Check Out</Label>
               <Dialog 
-                open={calendarOpen === 'checkOut'} 
-                onOpenChange={(isOpen) => setCalendarOpen(isOpen ? 'checkOut' : null)}
+                open={activeCalendar === 'checkOut'} 
+                onOpenChange={(open) => setActiveCalendar(open ? 'checkOut' : null)}
               >
                 <DialogTrigger asChild>
                   <Button 
                     variant="outline" 
-                    id="check-out-date"
                     className="w-full justify-start text-left font-normal"
                   >
                     {checkOut.toLocaleDateString('en-US', {
@@ -136,11 +157,14 @@ export default function Booking({ price }) {
                     })}
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="w-auto p-0">
+                <DialogContent>
+                  <DialogHeader>
+                    <DialogTitle>Select Check-out Date</DialogTitle>
+                  </DialogHeader>
                   <Calendar
                     mode="single"
                     selected={checkOut}
-                    onSelect={(date) => date && setCheckOut(date)}
+                    onSelect={handleCheckOutSelect}
                     disabled={(date) => date <= checkIn}
                     initialFocus
                   />
@@ -151,9 +175,9 @@ export default function Booking({ price }) {
 
           {/* Room Selection */}
           <div className="grid gap-2">
-            <Label htmlFor="room-count">Number of Rooms</Label>
+            <Label htmlFor="rooms">Number of Rooms</Label>
             <Input
-              id="room-count"
+              id="rooms"
               type="number"
               min="1"
               max="10"
@@ -165,7 +189,7 @@ export default function Booking({ price }) {
             />
           </div>
 
-          {/* Price Breakdown */}
+          {/* Price Summary */}
           <div className="space-y-3 pt-2">
             <div className="flex justify-between items-center">
               <span className="text-sm text-muted-foreground">Price per room:</span>
