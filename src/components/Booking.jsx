@@ -14,12 +14,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Calendar } from "@/components/ui/calendar";
 import { Label } from "@/components/ui/label";
-import { addDays } from "date-fns";
+import { addDays, format } from "date-fns";
 import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
 
 export default function Booking({ price }) {
   const { id } = useParams();
-  const [createBooking, { isLoading: isCreateBookingLoading }] = useCreateBookingMutation();
+  const [createBooking, { isLoading }] = useCreateBookingMutation();
   const { user } = useUser();
 
   // State management
@@ -29,8 +29,9 @@ export default function Booking({ price }) {
   const [numberOfRooms, setNumberOfRooms] = useState(1);
   const [activeCalendar, setActiveCalendar] = useState(null);
   const [totalPrice, setTotalPrice] = useState(0);
+  const [checkInMonth, setCheckInMonth] = useState(new Date());
+  const [checkOutMonth, setCheckOutMonth] = useState(new Date());
 
-  // Calculate total price whenever number of rooms or price changes
   useEffect(() => {
     setTotalPrice((numberOfRooms * price).toFixed(2));
   }, [numberOfRooms, price]);
@@ -49,10 +50,10 @@ export default function Booking({ price }) {
     try {
       const bookingData = {
         hotelId: id,
-        checkIn: checkIn.toISOString().split("T")[0],
-        checkOut: checkOut.toISOString().split("T")[0],
+        checkIn: format(checkIn, 'yyyy-MM-dd'),
+        checkOut: format(checkOut, 'yyyy-MM-dd'),
         roomNumber: numberOfRooms,
-        totalprice: parseFloat(totalPrice),
+        totalprice: parseFloat(totalPrice)
       };
 
       const response = await createBooking(bookingData).unwrap();
@@ -66,16 +67,24 @@ export default function Booking({ price }) {
   const handleCheckInSelect = (date) => {
     if (!date) return;
     setCheckIn(date);
-    // If check-out is now invalid (before or same as new check-in), adjust it
+    setCheckInMonth(date);
+
     if (checkOut <= date) {
-      setCheckOut(addDays(date, 1));
+      const newCheckOut = addDays(date, 1);
+      setCheckOut(newCheckOut);
+      setCheckOutMonth(newCheckOut);
     }
     setActiveCalendar(null);
   };
 
   const handleCheckOutSelect = (date) => {
     if (!date) return;
+    if (date <= checkIn) {
+      alert("Check-out date must be after check-in date");
+      return;
+    }
     setCheckOut(date);
+    setCheckOutMonth(date);
     setActiveCalendar(null);
   };
 
@@ -86,6 +95,7 @@ export default function Booking({ price }) {
           Book Now
         </Button>
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
@@ -100,29 +110,23 @@ export default function Booking({ price }) {
         </DialogHeader>
 
         <div className="grid gap-4 py-4">
-          {/* Date Selection */}
-          <div className="flex flex-col sm:flex-row gap-4">
+          <div className="flex flex-col gap-4">
             {/* Check-in Date */}
-            <div className="grid gap-2 flex-1">
-              <Label htmlFor="check-in">Check In</Label>
-              <Dialog 
-                open={activeCalendar === 'checkIn'} 
+            <div className="grid gap-2">
+              <Label>Check In</Label>
+              <Dialog
+                open={activeCalendar === 'checkIn'}
                 onOpenChange={(open) => setActiveCalendar(open ? 'checkIn' : null)}
               >
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start text-left font-normal"
                   >
-                    {checkIn.toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                    {format(checkIn, 'MMM dd, yyyy')}
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="p-0">
                   <DialogHeader>
                     <DialogTitle>Select Check-in Date</DialogTitle>
                   </DialogHeader>
@@ -131,6 +135,8 @@ export default function Booking({ price }) {
                     selected={checkIn}
                     onSelect={handleCheckInSelect}
                     disabled={(date) => date < new Date()}
+                    month={checkInMonth}
+                    onMonthChange={setCheckInMonth}
                     initialFocus
                   />
                 </DialogContent>
@@ -138,26 +144,21 @@ export default function Booking({ price }) {
             </div>
 
             {/* Check-out Date */}
-            <div className="grid gap-2 flex-1">
-              <Label htmlFor="check-out">Check Out</Label>
-              <Dialog 
-                open={activeCalendar === 'checkOut'} 
+            <div className="grid gap-2">
+              <Label>Check Out</Label>
+              <Dialog
+                open={activeCalendar === 'checkOut'}
                 onOpenChange={(open) => setActiveCalendar(open ? 'checkOut' : null)}
               >
                 <DialogTrigger asChild>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     className="w-full justify-start text-left font-normal"
                   >
-                    {checkOut.toLocaleDateString('en-US', {
-                      weekday: 'short',
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric'
-                    })}
+                    {format(checkOut, 'MMM dd, yyyy')}
                   </Button>
                 </DialogTrigger>
-                <DialogContent>
+                <DialogContent className="p-0">
                   <DialogHeader>
                     <DialogTitle>Select Check-out Date</DialogTitle>
                   </DialogHeader>
@@ -166,6 +167,8 @@ export default function Booking({ price }) {
                     selected={checkOut}
                     onSelect={handleCheckOutSelect}
                     disabled={(date) => date <= checkIn}
+                    month={checkOutMonth}
+                    onMonthChange={setCheckOutMonth}
                     initialFocus
                   />
                 </DialogContent>
@@ -202,24 +205,13 @@ export default function Booking({ price }) {
           </div>
         </div>
 
-        {/* Submit Button */}
         <Button
           onClick={handleBook}
-          disabled={isCreateBookingLoading}
+          disabled={isLoading}
           className="w-full mt-2"
           size="lg"
         >
-          {isCreateBookingLoading ? (
-            <span className="flex items-center gap-2">
-              <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
-              Processing...
-            </span>
-          ) : (
-            "Confirm Booking"
-          )}
+          {isLoading ? "Processing..." : "Confirm Booking"}
         </Button>
       </DialogContent>
     </Dialog>
