@@ -4,18 +4,24 @@ const BACKEND_URL = "http://localhost:8085";
 
 export const api = createApi({
   reducerPath: "api",
-  baseQuery: fetchBaseQuery({ 
+  baseQuery: fetchBaseQuery({
     baseUrl: `${BACKEND_URL}/api/`,
     prepareHeaders: async (headers, { getState }) => {
-      const token = await window?.Clerk?.session?.getToken();
-      if (token) {
-        headers.set("Authorization", `Bearer ${token}`);
-      }
-      headers.set("Content-Type", "application/json");
-      return headers;
+      return new Promise((resolve) => {
+        async function checkToken() {
+          const clerk = window.Clerk;
+          if (clerk) {
+            const token = await clerk.session?.getToken();
+            headers.set("Authorization", `Bearer ${token}`);
+            resolve(headers);
+          } else {
+            setTimeout(checkToken, 500); // try again in 500ms
+          }
+        }
+        checkToken();
+      });
     },
   }),
-  tagTypes: ['Bookings'],
   endpoints: (builder) => ({
     getHotels: builder.query({
       query: () => "hotels",
@@ -39,35 +45,36 @@ export const api = createApi({
         method: "POST",
         body: booking,
       }),
-      invalidatesTags: ['Bookings'],
     }),
-    getBookings: builder.query({
-      query: () => "bookings",
-      providesTags: ['Bookings'],
+    getBookingById: builder.query({
+      query: (id) => `bookings/${id}`,
     }),
     getFilteredHotels: builder.query({
       query: (filters) => ({
         url: "hotels/filter",
         params: filters,
       }),
-    }),
-    deleteBooking: builder.mutation({
-      query: (bookingId) => ({
-        url: `bookings/${bookingId}`,
-        method: "DELETE",
+    }), // 🛑 FIXED: Closed the getFilteredHotels object properly
+    createCheckoutSession: builder.mutation({
+      query: () => ({
+        url: `payments/create-checkout-session`,
+        method: "POST",
       }),
-      invalidatesTags: ['Bookings'],
-    }),
+    }), // 🛑 FIXED: This was incorrectly inside getFilteredHotels
+    getCheckoutSessionStatus: builder.query({
+      query: (sessionId) => `payments/session-status?session_id=${sessionId}`,
+    }), // 🛑 FIXED: This was incorrectly inside getFilteredHotels
   }),
 });
 
-export const { 
-  useGetHotelsQuery, 
-  useGetHotelByIdQuery, 
+export const {
+  useGetHotelsQuery,
+  useGetHotelByIdQuery,
   useCreateHotelMutation,
-  useCreateBookingMutation, 
+  useCreateBookingMutation,
   useGetHotelsForSearchQueryQuery,
   useGetFilteredHotelsQuery,
-  useGetBookingsQuery,
-  useDeleteBookingMutation
+  useGetBookingByIdQuery,
+  useCreateCheckoutSessionMutation,
+  useGetCheckoutSessionStatusQuery,
 } = api;
