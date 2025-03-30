@@ -1,71 +1,61 @@
-import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-
-const BACKEND_URL = "http://localhost:8085";
+import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
 export const api = createApi({
-    baseUrl: "https://Hotelapp-frontend-sharada.onrender.com/api/",
-  reducerPath: "api",
+  reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: `${BACKEND_URL}/api/`,
+    baseUrl: 'https://your-backend-url.vercel.app/api', // Correct the base URL to the backend's URL
     prepareHeaders: async (headers, { getState }) => {
-      return new Promise((resolve) => {
-        async function checkToken() {
-          const clerk = window.Clerk;
-          if (clerk) {
-            const token = await clerk.session?.getToken();
-            headers.set("Authorization", `Bearer ${token}`);
-            resolve(headers);
-          } else {
-            setTimeout(checkToken, 500); // try again in 500ms
-          }
-        }
-        checkToken();
-      });
-    },
+      const clerk = window.Clerk;
+      if (clerk) {
+        const token = await clerk.session?.getToken();
+        headers.set('Authorization', `Bearer ${token}`);
+      }
+      return headers;
+    }
   }),
   endpoints: (builder) => ({
     getHotels: builder.query({
-      query: () => "hotels",
+      query: () => 'hotels'
     }),
     getHotelsForSearchQuery: builder.query({
-      query: ({ query }) => `hotels/search/retrive?query=${query}`,
+      query: ({ query }) => `hotels/search/retrive?query=${query}`
     }),
     getHotelById: builder.query({
-      query: (id) => `hotels/${id}`,
+      query: (id) => `hotels/${id}`
     }),
     createHotel: builder.mutation({
       query: (hotel) => ({
-        url: "hotels",
-        method: "POST",
-        body: hotel,
-      }),
+        url: 'hotels',
+        method: 'POST',
+        body: hotel
+      })
     }),
     createBooking: builder.mutation({
       query: (booking) => ({
-        url: "bookings",
-        method: "POST",
-        body: booking,
-      }),
+        url: 'bookings',
+        method: 'POST',
+        body: booking
+      })
     }),
     getBookingById: builder.query({
-      query: (id) => `bookings/${id}`,
+      query: (id) => `bookings/${id}`
     }),
     getFilteredHotels: builder.query({
       query: (filters) => ({
-        url: "hotels/filter",
-        params: filters,
-      }),
-    }), 
+        url: 'hotels/filter',
+        params: filters
+      })
+    }),
     createCheckoutSession: builder.mutation({
       query: () => ({
-        url: `payments/create-checkout-session`,
-        method: "POST",
-      }),
-    }), 
+        url: 'payments/create-checkout-session',
+        method: 'POST'
+      })
+    }),
     getCheckoutSessionStatus: builder.query({
-      query: (sessionId) => `payments/session-status?session_id=${sessionId}`,
-    }), 
-  }),
+      query: (sessionId) => `payments/session-status?session_id=${sessionId}`
+    })
+  })
 });
 
 export const {
@@ -77,5 +67,5 @@ export const {
   useGetFilteredHotelsQuery,
   useGetBookingByIdQuery,
   useCreateCheckoutSessionMutation,
-  useGetCheckoutSessionStatusQuery,
+  useGetCheckoutSessionStatusQuery
 } = api;
