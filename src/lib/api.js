@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://vista-stay-backend.vercel.app/api', // Updated to include /api
+    baseUrl: 'https://vista-stay-backend-sharada.vercel.app/api', // Updated to include /api
     prepareHeaders: async (headers, { getState }) => {
       const clerk = window.Clerk;
       if (clerk) {
