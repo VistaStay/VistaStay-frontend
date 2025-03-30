@@ -3,6 +3,7 @@ import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 const BACKEND_URL = "http://localhost:8085";
 
 export const api = createApi({
+    baseUrl: "https://Hotelapp-frontend-sharada.onrender.com/api/",
   reducerPath: "api",
   baseQuery: fetchBaseQuery({
     baseUrl: `${BACKEND_URL}/api/`,
@@ -54,16 +55,16 @@ export const api = createApi({
         url: "hotels/filter",
         params: filters,
       }),
-    }), // 🛑 FIXED: Closed the getFilteredHotels object properly
+    }), 
     createCheckoutSession: builder.mutation({
       query: () => ({
         url: `payments/create-checkout-session`,
         method: "POST",
       }),
-    }), // 🛑 FIXED: This was incorrectly inside getFilteredHotels
+    }), 
     getCheckoutSessionStatus: builder.query({
       query: (sessionId) => `payments/session-status?session_id=${sessionId}`,
-    }), // 🛑 FIXED: This was incorrectly inside getFilteredHotels
+    }), 
   }),
 });
 
