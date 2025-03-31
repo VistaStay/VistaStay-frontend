@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8080/api', // Updated to include /api
+    baseUrl: 'http://localhost:8083/api', // Updated to include /api
     prepareHeaders: async (headers, { getState }) => {
       const clerk = window.Clerk;
       if (clerk) {
