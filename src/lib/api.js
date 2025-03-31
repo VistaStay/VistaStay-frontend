@@ -1,10 +1,10 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 //https://vista-stay-backend.vercel.app/
-//http://localhost:8090/api
+//http://localhost:8080/api
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'http://localhost:8083/api', // Updated to include /api
+    baseUrl: 'https://vistastay-backend.onrender.com/api/', // Updated to include /api
     prepareHeaders: async (headers, { getState }) => {
       const clerk = window.Clerk;
       if (clerk) {
