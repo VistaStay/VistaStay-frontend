@@ -33,7 +33,7 @@ export function BookingDialog({ hotelName, hotelId, onSubmit, isLoading }) {
             Complete the form below to book your stay at {hotelName}.
           </DialogDescription>
         </DialogHeader>
-        <BookingForm
+        <BookingForm 
           onSubmit={handleBookingSubmit} 
           isLoading={isLoading} 
           hotelId={hotelId} 

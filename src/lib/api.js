@@ -4,7 +4,7 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
-    baseUrl: 'https://vista-stay-backend-sharada.vercel.app/api', // Updated to include /api
+    baseUrl: 'http://localhost:8080/api', // Updated to include /api
     prepareHeaders: async (headers, { getState }) => {
       const clerk = window.Clerk;
       if (clerk) {
@@ -19,8 +19,8 @@ export const api = createApi({
       query: () => 'hotels'
     }),
     getHotelsForSearchQuery: builder.query({
-      query: ({ query }) => `hotels/search/retrive?query=${query}`
-    }),
+        query: ({ query }) => `hotels/search/retrive?query=${query}`
+      }),
     getHotelById: builder.query({
       query: (id) => `hotels/${id}`
     }),

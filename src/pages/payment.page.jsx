@@ -1,14 +1,15 @@
-import { useSearchParams } from "react-router-dom";
-import { useGetBookingByIdQuery } from "@/lib/api";
 import CheckoutForm from "@/components/CheckoutForm";
+import { useSearchParams } from "react-router";
+import { useGetBookingByIdQuery } from "@/lib/api";
 
 function PaymentPage() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const bookingId = searchParams.get("bookingId");
 
-  const { data: booking, isLoading: isBookingLoading } = useGetBookingByIdQuery(bookingId);
+  const { data: booking, isLoading: isBookingLoading } =
+    useGetBookingByIdQuery(bookingId);
 
-  if (isBookingLoading || !booking) {
+  if (isBookingLoading && !booking) {
     return <div>Loading...</div>;
   }
 
