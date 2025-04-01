@@ -40,48 +40,11 @@ export default function HotelListings() {
 
   const isAISearchActive = !!searchValue;
   const hotelsData = isAISearchActive ? searchResults : allHotels;
-  const isLoading = isAISearchActive ? searchLoading : allHotelsLoading;
   const isError = isAISearchActive ? searchError : allHotelsError;
 
   const handleFilterApply = (newFilters) => {
     setFilters(newFilters);
   };
-
-  if (isLoading) {
-    return (
-      <section className="px-8 py-8 lg:py-16">
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Top trending hotels worldwide
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Discover the most trending hotels worldwide for an unforgettable experience.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
-          <p>Loading...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (isError) {
-    return (
-      <section className="px-8 py-8 lg:py-16">
-        <div className="mb-12">
-          <h2 className="text-3xl md:text-4xl font-bold mb-4">
-            Top trending hotels worldwide
-          </h2>
-          <p className="text-lg text-muted-foreground">
-            Discover the most trending hotels worldwide for an unforgettable experience.
-          </p>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
-          <p className="text-red-500">Error loading hotels</p>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <>
@@ -95,16 +58,16 @@ export default function HotelListings() {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mt-4">
-          {hotelsData && hotelsData.length > 0 ? (
+          {searchLoading ? (
+            <p>Loading AI search results...</p>
+          ) : isError ? (
+            <p className="text-red-500">Error loading AI search results</p>
+          ) : hotelsData && hotelsData.length > 0 ? (
             hotelsData.map((item) => {
               const hotel = isAISearchActive ? item.hotel : item;
               const confidence = isAISearchActive ? item.confidence : null;
               return (
-                <HotelCard
-                  key={hotel._id}
-                  hotel={hotel}
-                  confidence={confidence}
-                />
+                <HotelCard key={hotel._id} hotel={hotel} confidence={confidence} />
               );
             })
           ) : (
@@ -146,17 +109,11 @@ export default function HotelListings() {
             <p className="text-red-500">Error loading filtered hotels</p>
           ) : filteredHotels && Object.keys(filters).length > 0 ? (
             filteredHotels.map((hotel) => (
-              <HotelCard
-                key={hotel._id}
-                hotel={hotel}
-              />
+              <HotelCard key={hotel._id} hotel={hotel} />
             ))
           ) : allHotels && allHotels.length > 0 ? (
             allHotels.map((hotel) => (
-              <HotelCard
-                key={hotel._id}
-                hotel={hotel}
-              />
+              <HotelCard key={hotel._id} hotel={hotel} />
             ))
           ) : (
             <p>No hotels found.</p>
