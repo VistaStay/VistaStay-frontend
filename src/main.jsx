@@ -1,13 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { BrowserRouter, Routes, Route } from "react-router"; // Fixed import
-//import App from "./App.jsx";
+import { BrowserRouter, Routes, Route } from "react-router"; 
 import HomePage from "./pages/home.page";
 import HotelPage from "./pages/hotel.page";
 import RootLayout from "./Layout/root-layout.layout";
 import MainLayout from "./Layout/main.layout";
-//import HotelsPage from "./pages/hotels.page";
 import { store } from "./lib/store";
 import { Provider } from "react-redux";
 import CreateHotelPage from "./pages/create.hotel.page";

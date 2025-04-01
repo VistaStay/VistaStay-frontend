@@ -28,11 +28,10 @@ export default function HotelPage() {
     try {
       const response = await createBooking(bookingData).unwrap();
       console.log("Booking created successfully!", response);
-      const bookingId = response._id; // Ensure backend returns _id
+      const bookingId = response._id; 
       navigate(`/booking/payment?bookingId=${bookingId}`);
     } catch (err) {
       console.error("Failed to create booking:", err);
-      // Optionally, add user feedback here (e.g., toast notification)
     }
   };
 

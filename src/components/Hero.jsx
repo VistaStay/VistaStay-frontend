@@ -2,7 +2,7 @@ import { useForm } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Form, FormControl, FormField, FormItem, FormLabel } from "@/components/ui/form";
-import { Sparkles, Compass, DollarSign, Briefcase } from "lucide-react"; // Icons for experience, location, and budget
+import { Sparkles, Compass, DollarSign, Briefcase } from "lucide-react"; 
 import { useDispatch } from "react-redux";
 import { submit } from "@/lib/api/features/searchSlice";
 
@@ -43,7 +43,7 @@ export default function Hero() {
             name="experience"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg">Experience</FormLabel> {/* Increased font size */}
+                <FormLabel className="text-lg">Experience</FormLabel> 
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -67,7 +67,7 @@ export default function Hero() {
             name="location"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg">Location</FormLabel> {/* Increased font size */}
+                <FormLabel className="text-lg">Location</FormLabel> 
                 <FormControl>
                   <div className="relative">
                     <Input
@@ -91,7 +91,7 @@ export default function Hero() {
             name="budget"
             render={({ field }) => (
               <FormItem>
-                <FormLabel className="text-lg">Budget</FormLabel> {/* Increased font size */}
+                <FormLabel className="text-lg">Budget</FormLabel> 
                 <FormControl>
                   <div className="relative">
                     <Input

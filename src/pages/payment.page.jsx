@@ -3,7 +3,7 @@ import { useSearchParams } from "react-router";
 import { useGetBookingByIdQuery } from "@/lib/api";
 
 function PaymentPage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const bookingId = searchParams.get("bookingId");
 
   const { data: booking, isLoading: isBookingLoading } =

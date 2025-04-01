@@ -1,5 +1,5 @@
 import { Badge } from "@/components/ui/badge";
-import { CloseButton } from "@/components/ui/close-button"; // You may need to import it if available
+import { CloseButton } from "@/components/ui/close-button"; 
 
 export default function TagWithClose() {
   const [tags, setTags] = useState(["Sample Tag"]);

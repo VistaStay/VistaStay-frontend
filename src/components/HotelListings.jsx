@@ -2,7 +2,6 @@ import { useGetHotelsForSearchQueryQuery, useGetHotelsQuery, useGetFilteredHotel
 import { useState } from "react";
 import HotelCard from "./HotelCard";
 import { useSelector } from "react-redux";
-import { Button } from "@/components/ui/button";
 import {
   Sheet,
   SheetContent,
