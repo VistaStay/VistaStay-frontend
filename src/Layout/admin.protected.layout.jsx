@@ -1,11 +1,11 @@
-import { useUser } from "@clerk/clerk-react"; // ✅ Import this
-import { Navigate, Outlet } from "react-router-dom"; // ✅ Correct import
+import { useUser } from "@clerk/clerk-react"; 
+import { Navigate, Outlet } from "react-router-dom"; 
 
 const AdminProtectedLayout = () => {
-    const { user, isLoaded } = useUser(); // Ensure user is loaded before accessing
+    const { user, isLoaded } = useUser(); 
 
     if (!isLoaded) {
-        return <div>Loading...</div>; // Prevents accessing undefined user data
+        return <div>Loading...</div>; 
     }
 
     if (!user || user.publicMetadata?.role !== "admin") {

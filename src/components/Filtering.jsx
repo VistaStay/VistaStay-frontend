@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { SheetClose } from "@/components/ui/sheet"; // Ensure this import is correct
+import { SheetClose } from "@/components/ui/sheet"; 
 
 export default function Filter({ onFilterApply }) {
   const [minValue, setMinValue] = useState("");
