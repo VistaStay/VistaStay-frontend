@@ -1,17 +1,15 @@
 import { Button } from "@/components/ui/button";
 import {
   useGetCheckoutSessionStatusQuery,
-  useGetBookingByIdQuery,
 } from "@/lib/api";
-import { Link, useSearchParams, Navigate } from "react-router";
+import { useSearchParams } from "react-router-dom"; // Changed from "react-router"
 import { format } from "date-fns";
 
 function CompletePage() {
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get("session_id");
 
-  const { data, isLoading, isError } =
-    useGetCheckoutSessionStatusQuery(sessionId);
+  const { data, isLoading, isError } = useGetCheckoutSessionStatusQuery(sessionId);
 
   if (isLoading) {
     return (
@@ -25,36 +23,38 @@ function CompletePage() {
     return (
       <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md text-center">
         <h2 className="text-2xl font-bold mb-4 text-red-600">
-          Something went wrong
+          Something Went Wrong
         </h2>
         <p className="mb-4">
-          We couldn't process your payment information. Please try again or
-          contact support.
+          We couldn't process your payment information. Please try again or contact support.
         </p>
-        <Button asChild className="mt-6">
-          <Link to={`/booking/payment?bookingId=${data?.bookingId || ""}`}>
-            Return to Payment Page
-          </Link>
-        </Button>
       </div>
     );
   }
 
-  if (data?.status === "open") {
-    return <Navigate to={`/booking/payment?bookingId=${data?.bookingId}`} />;
+  if (data?.status === "open" || data?.payment_status !== "paid") {
+    return (
+      <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md text-center">
+        <h2 className="text-2xl font-bold mb-4 text-yellow-600">
+          Payment Not Complete
+        </h2>
+        <p className="mb-4">
+          Your payment is still pending or was not successful. Please complete the payment to confirm your booking.
+        </p>
+      </div>
+    );
   }
 
-  if (data?.status === "complete") {
-    // Format dates
+  if (data?.status === "complete" && data?.payment_status === "paid") {
     const checkInDate = new Date(data.booking.checkIn);
     const checkOutDate = new Date(data.booking.checkOut);
     const formattedCheckIn = format(checkInDate, "MMM dd, yyyy");
     const formattedCheckOut = format(checkOutDate, "MMM dd, yyyy");
-
-    // Calculate number of nights
     const nights = Math.round(
       (checkOutDate - checkInDate) / (1000 * 60 * 60 * 24)
     );
+    const numberOfRooms = data.booking.roomNumbers.length;
+    const totalPrice = (data.hotel.price * numberOfRooms * nights).toFixed(2);
 
     return (
       <section
@@ -81,15 +81,10 @@ function CompletePage() {
         <h2 className="text-2xl font-bold mb-4 text-center">
           Booking Confirmed!
         </h2>
-        {/* <p className="text-center mb-4">
-          Your payment has been processed successfully. A confirmation email
-          will be sent to{" "}
-          <span className="font-semibold">{data.customer_email}</span>.
-        </p>
-         */}
         <p className="text-center mb-4">
           Your payment has been processed successfully.
         </p>
+
         {/* Hotel Info Card */}
         <div className="mt-6 border rounded-lg overflow-hidden">
           <div className="relative h-48">
@@ -130,8 +125,8 @@ function CompletePage() {
                 </p>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">Room Number</p>
-                <p className="font-medium">{data.booking.roomNumber}</p>
+                <p className="text-gray-600 text-sm">Number of Rooms</p>
+                <p className="font-medium">{numberOfRooms}</p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm">Check-in Date</p>
@@ -148,31 +143,32 @@ function CompletePage() {
                 </p>
               </div>
               <div>
-                <p className="text-gray-600 text-sm">Price</p>
-                <p className="font-medium">${data.hotel.price} per night</p>
+                <p className="text-gray-600 text-sm">Price per Night</p>
+                <p className="font-medium">${data.hotel.price}</p>
+              </div>
+              <div>
+                <p className="text-gray-600 text-sm">Total Price</p>
+                <p className="font-medium">${totalPrice}</p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm">Payment Method</p>
                 <p className="font-medium capitalize">
-                  {data.booking.paymentMethod.replace("_", " ").toLowerCase()}
+                  {data.booking.paymentMethod
+                    .replace("_", " ")
+                    .toLowerCase()}
                 </p>
               </div>
               <div>
                 <p className="text-gray-600 text-sm">Payment Status</p>
-                <p className="font-medium text-green-600">
-                  {data.booking.paymentStatus}
-                </p>
+                <p className="font-medium text-green-600">Paid</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="mt-6 border-t pt-4">
-          <h3 className="text-lg font-semibold mb-2">What happens next?</h3>
+          <h3 className="text-lg font-semibold mb-2">What Happens Next?</h3>
           <ul className="list-disc pl-5 space-y-1">
-            {/* <li>
-              You'll receive a confirmation email with your booking details
-            </li> */}
             <li>Present your booking ID upon arrival at the hotel</li>
             <li>Check-in time starts at 2:00 PM on {formattedCheckIn}</li>
             <li>Check-out time is before 12:00 PM on {formattedCheckOut}</li>
@@ -190,15 +186,6 @@ function CompletePage() {
             </a>
           </p>
         </div>
-
-        <div className="mt-6 flex justify-center gap-4">
-          {/* <Button asChild>
-            <Link to="/bookings">View My Bookings</Link>
-          </Button> */}
-          <Button asChild variant="outline">
-            <Link to="/">Return to Home</Link>
-          </Button>
-        </div>
       </section>
     );
   }
@@ -207,12 +194,8 @@ function CompletePage() {
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-md text-center">
       <h2 className="text-2xl font-bold mb-4">Payment Status Unknown</h2>
       <p className="mb-4">
-        We couldn't determine the status of your payment. If you completed a
-        booking, please check your email for confirmation.
+        We couldn't determine the status of your payment. If you completed a booking, please check your email for confirmation.
       </p>
-      <Button asChild className="mt-6">
-        <Link to="/">Return to Home</Link>
-      </Button>
     </div>
   );
 }
